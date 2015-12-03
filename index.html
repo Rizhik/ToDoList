@@ -1,58 +1,79 @@
 <!DOCTYPE html>
-<html lang="en-US">
-	<head>
-		<title>ToDo List</title>
-		<link rel="stylesheet" href="style.css">
-		<meta charset="utf-8">
-	</head>
 
-	<body onLoad="uncheck(); addListener('Active');">
-		<div calss="header">
-			
-			<h1>ToDo List</h1>
-			
-			<div class="inputFields">
-				<input type="text" id="newTask" placeholder="What needs to be done?"/>
-				<input class="controls" type="checkbox" id="checkAll"/>
+<html>
+
+<head>
+	<meta charset="UTF-8"> 
+	<link rel="stylesheet" href="style.css">
+	<title>ToDo List</title>
+</head>
+
+<body onLoad="uncheck(); addListener('Active');">
+<div class="Grid">
+	<div id="Header" class="Row">
+		<h1>Your's ToDo List</h1>
+	</div>
+	<div id="Main" class="Row Expand">
+		<div id="Inside" class="Grid">
+			<div id="Menu" class="Column">
+				<ul id="TimeFilter">
+					<li>Inbox</li>
+					<li>Today</li>
+					<li>Next 7 days</li>
+				</ul>
+
+				<ul id="GroupFilter">
+					<li>Projects</li>
+					<li>Labels</li>
+					<li>Filters</li>
+				</ul>
+
+
 			</div>
-		</div>
+			<div id="Content" class="Column Expand">
+				<h2>Name of current List</h2>
+				<div class="inputFields">
+					<input type="text" id="newTask" placeholder="What needs to be done?"/>
+					<input class="controls" type="checkbox" id="checkAll"/>
+				</div>
 
-		<div class="application">
-			<ul id="ToDoList">
+				<div class="application">
+					<ul id="ToDoList"></ul>
 
-				<!-- Example of code that will be generated automaticaly
-
-				 	<li class="{{classValue}}" data-id="{{id}}">
-				 		<div>
-				 			<input {{status}} type="checkbox" class="checkbox"></input>
-				 			<label class="label">{{taskDescription}}</label>
-				 			<button class = "deleteButton" type="Delete">X</button>
-				 			<input class="edit" type="text">
-				 		</div>
-				 	</li>';
-				-->
+					<!-- 
+					 	<li class="{{classValue}}" data-id="{{id}}">
+					 		<div>
+					 			<input {{status}} type="checkbox" class="checkbox"></input>
+					 			<label class="label">{{text}}</label>
+					 			<button class="destroy deleteButton" type="Delete">X</button>
+					 			<input class="edit" type="text">
+					 		</div>
+					 	</li>';
+					 -->
+				</div>
+				<div id="Controls">
+					<button class="controls" name="ViewAllButton" onclick="showByStatus('All')">All</button>
+					<button class="controls" name="ViewActiveButton" onclick="showByStatus('Active')">Active</button>
+					<button class="controls" name="ViewCompletedButton" onclick="showByStatus('Completed')">Completed</button>
+					<button class="controls" id="ClearCompletedButton" onclick="clearCompletedButton()">Clear Completed</button>
+				</div>
 				
-			</ul>
-		</div>
+				<div class="controls" id="counter"></div>
 
-		<div class="footer">
-			<div class="controls" id="counter"></div>
-
-			<div name="buttons">
-				<button class="controls" name="ViewAllButton" onclick="showByStatus('All')">All</button>
-				<button class="controls" name="ViewActiveButton" onclick="showByStatus('Active')">Active</button>
-				<button class="controls" name="ViewCompletedButton" onclick="showByStatus('Completed')">Completed</button>
-				<button class="controls" id="ClearCompletedButton" onclick="clearCompletedButton()">Clear Completed</button>
 			</div>
-
-			<div class="info">
-				<p class="controls info">Double-click to edit a task in ToDo List</p>
-				<p>Written by <a href="https://github.com/aperova">Anna Perova</a></p>
-			</div>
+			
+			<div id="RSide" class="Column"><p></p></div>
 		</div>
+	</div>
+	<div id="Footer" class="Row">
+		<p>Written by <a href="https://github.com/ryzhik">Anna Perova</a></p>
+	</div>
+</div>
 
-		<script type="text/javascript" src="uuid.js"></script>
-		<script type="text/javascript" src="Tree.js"></script>
-		<script type="text/javascript" src="javascript.js"></script>
-	</body>
-</html> 
+<script type="text/javascript" src="uuid.js"></script>
+<script type="text/javascript" src="Tree.js"></script>
+<script type="text/javascript" src="javascript.js"></script>
+</body>
+
+</html>
+
