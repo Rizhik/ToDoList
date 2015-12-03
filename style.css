@@ -1,0 +1,139 @@
+body{
+	font: 14px 'Helvetica Neue','Helvetica','Arial','sans-serif';
+	background-color: #F5F5F5;
+	color: #4d4d4d;
+	-webkit-font-smoothing: antialiased;
+	-moz-font-smoothing: antialiased;
+	font-smoothing: antialiased;
+	font-weight: 300;
+}
+
+h1{
+	color:rgba(175, 47, 47, 0.15);
+	text-align: center;
+	font-size: 72px;
+}
+
+ul{
+	background-color:white;
+	list-style: none;
+	border-radius: 5px;
+	color:#4D4D4D;
+}
+
+.controls{
+	display: none;
+	color:#777;
+	margin-bottom: 20px;
+}
+
+.inputFields{
+	position: relative;
+	width:340px;
+	margin: 0px auto 20px;
+}
+
+#checkAll{
+	position: absolute;
+	left:14px;
+	top:17px;
+	background-color: red;
+	text-align: center;
+}
+
+#newTask{
+	font-size: 20px;
+	width: 300px;
+	height:50px;
+	padding-left: 40px;
+	display: block;
+	border-radius: 5px;
+	border:none;
+}
+
+.application{
+	width:320px;
+	display: block;
+	margin: 0px auto;
+
+}
+
+li{
+
+	font-size: 32px;
+	position: relative;
+	height:40px;
+}
+
+li input{
+	position: absolute;
+	top:12px;
+	left:-30px;
+}
+
+.completed{
+	text-decoration: line-through;
+	color:gray;
+}
+
+.deleteButton{
+	color:#AF5B5E;
+	font-weight:bold;
+	padding: 0px;
+	border:none;
+	background-image:none;
+	background-color:white;
+	position: absolute;
+	top:12px;
+	right:17px;
+	display: none;
+}
+
+li:hover button 
+{
+	display: inline;
+}
+
+.footer{
+	width:320px;
+	display: block;
+	margin: 0px auto;
+	padding-top: 20px;
+}
+
+div[name="buttons"]{
+	margin-top: 20px;
+}
+
+button{
+	border-radius: 3px;
+	border:none;
+}
+
+.info{
+	margin-top:30px; 
+	color: #BFBFBF;
+	font-size: 10px;
+	text-align: center;
+}
+
+li input[type="text"]{
+	font-size: 20px;
+    width: 310px;
+    height: 36px;
+    border-radius: 5px;
+    border: 2px solid lightblue;;
+    margin:-11px;
+    padding-left:10px;
+	display:none;
+}
+li.editMode input{
+	display: inline-block;
+}
+
+li.editMode label,
+li.editMode button,
+li.editMode input[type="checkbox"] 
+{
+	display: none;
+}
