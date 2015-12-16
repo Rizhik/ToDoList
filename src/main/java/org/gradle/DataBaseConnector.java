@@ -7,19 +7,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseConnector {
+
+	private Connection connection;
+
 	public DatabaseConnector() throws Exception {
 		connection = connectToDB();
 	}
-	
-	public void close() throws Exception 
-	{
+
+	public void close() throws Exception {
 		connection.close();
 	}
-	
-	private Connection connection;
-	
+
 	public void addRecord(Task task) throws SQLException {
-		Statement statement= connection.createStatement();
+		Statement statement = connection.createStatement();
 		String insertQuery = "INSERT INTO tasks_tbl (id, task, user_id, status) VALUES ('"
 				+ task.id
 				+ "', '"
@@ -31,15 +31,15 @@ public class DatabaseConnector {
 
 	}
 
-	public void deleteRecord(Statement statement, String id)
-			throws SQLException {
+	public void deleteRecord(String id) throws SQLException {
+		Statement statement = connection.createStatement();
 		String deleteQuery = "DELETE FROM tasks_tbl WHERE id = '" + id + "'";
 
 		statement.execute(deleteQuery);
 	}
 
-	public String getTaskDescription(Statement statement, String id)
-			throws SQLException {
+	public String getTaskDescription(String id) throws SQLException {
+		Statement statement = connection.createStatement();
 		String selectQuery = "SELECT task FROM tasks_tbl WHERE id ='" + id
 				+ "'";
 
@@ -50,7 +50,8 @@ public class DatabaseConnector {
 		return result.getString(1);
 	}
 
-	public int getUserID(Statement statement, String id) throws SQLException {
+	public int getUserID(String id) throws SQLException {
+		Statement statement = connection.createStatement();
 		String selectQuery = "SELECT user_id FROM tasks_tbl WHERE id ='" + id
 				+ "'";
 
@@ -61,7 +62,8 @@ public class DatabaseConnector {
 		return result.getInt(1);
 	}
 
-	public String getStatus(Statement statement, String id) throws SQLException {
+	public String getStatus(String id) throws SQLException {
+		Statement statement = connection.createStatement();
 		String selectQuery = "SELECT status FROM tasks_tbl WHERE id = '" + id
 				+ "'";
 
@@ -72,15 +74,16 @@ public class DatabaseConnector {
 		return result.getString(1);
 	}
 
-	public void setStatus(Statement statement, String id, String status)
-			throws SQLException {
+	public void setStatus(String id, String status) throws SQLException {
+		Statement statement = connection.createStatement();
 		String updateQuery = "UPDATE tasks_tbl SET status = '" + status
 				+ "' WHERE id='" + id + "'";
 		statement.execute(updateQuery);
 	}
 
-	public void setTaskDescription(Statement statement, String id,
-			String newTaskDescription) throws SQLException {
+	public void setTaskDescription(String id, String newTaskDescription)
+			throws SQLException {
+		Statement statement = connection.createStatement();
 		String updateQuery = "UPDATE tasks_tbl SET task = '"
 				+ newTaskDescription + "' WHERE id='" + id + "'";
 		statement.execute(updateQuery);

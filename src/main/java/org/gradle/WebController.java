@@ -1,12 +1,8 @@
 package org.gradle;
 
-import java.sql.Connection;
-import java.sql.Statement;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,8 +23,8 @@ public class WebController extends WebMvcConfigurerAdapter {
 	@RequestMapping(value = "/ajax_add")
 	public void saveTask(@RequestParam String id, @RequestParam String task,
 			@RequestParam String status) throws Exception {
-		DatabaseConnector dbconnector = new DatabaseConnector();
 
+		DatabaseConnector dbconnector = new DatabaseConnector();
 		Task newTask = new Task(id, task, status);
 		dbconnector.addRecord(newTask);
 		log.info("Task added");
@@ -40,37 +36,30 @@ public class WebController extends WebMvcConfigurerAdapter {
 	public void deleteTask(@RequestParam String id) throws Exception {
 
 		DatabaseConnector dbconnector = new DatabaseConnector();
-		Connection connection = dbconnector.connectToDB();
-		Statement statement = connection.createStatement();
-
-		dbconnector.deleteRecord(statement, id);
+		dbconnector.deleteRecord(id);
 		log.info("Task deleted");
-		connection.close();
+		dbconnector.close();
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/ajax_changeStatus")
-	public void changeStatus(@RequestParam String id, @RequestParam String status) throws Exception {
+	public void changeStatus(@RequestParam String id,
+			@RequestParam String status) throws Exception {
 
 		DatabaseConnector dbconnector = new DatabaseConnector();
-		Connection connection = dbconnector.connectToDB();
-		Statement statement = connection.createStatement();
-
-		dbconnector.setStatus(statement, id, status);
+		dbconnector.setStatus(id, status);
 		log.info("Status changed");
-		connection.close();
+		dbconnector.close();
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/ajax_edit")
-	public void editTask(@RequestParam String id, @RequestParam String task) throws Exception {
+	public void editTask(@RequestParam String id, @RequestParam String task)
+			throws Exception {
 
-		Connection connection = DatabaseConnector.connectToDB();
-
-		dbconnector.setTaskDescription(statement, id, task);
-
+		DatabaseConnector dbconnector = new DatabaseConnector();
+		dbconnector.setTaskDescription(id, task);
 		log.info("Task edited");
-
-		connection.close();
+		dbconnector.close();
 	}
 }
