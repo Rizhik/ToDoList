@@ -35,23 +35,13 @@ public class TaskAPIController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/api/task/updateStatus")
-	public void changeStatus(@RequestParam String id,
+	@RequestMapping(value = "/api/task/update")
+	public void edit(@RequestParam String id, @RequestParam String task,
 			@RequestParam String status) throws Exception {
 
 		DatabaseConnector dbconnector = new DatabaseConnector();
-		dbconnector.setStatus(id, status);
-		log.info("Status changed");
-		dbconnector.close();
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "/api/task/update")
-	public void edit(@RequestParam String id, @RequestParam String task)
-			throws Exception {
-
-		DatabaseConnector dbconnector = new DatabaseConnector();
 		dbconnector.setTaskDescription(id, task);
+		dbconnector.setStatus(id, status);
 		log.info("Task updated");
 		dbconnector.close();
 	}

@@ -14,7 +14,6 @@ var newTaskField = document.getElementById('newTask');
 var ul = document.getElementById("ToDoList");
 var xhttp = new XMLHttpRequest();
 
-
 // Function for adding task UI
 function addButton() {
 	checkAllBox.checked = false;
@@ -73,17 +72,19 @@ function changeStatus(eventArgs) {
 	var completeTasksCount = 0;
 
 	// AJAX request to Server
-	xhttp.open("POST", "/api/task/updateStatus", true);
+	xhttp.open("POST", "/api/task/update", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
 	for (var i = 0; i < listOfItems.length; i++) {
 		if (listOfItems[i].id == id) {
 			if (checkbox.checked) {
 				listOfItems[i].status = ItemStatus.Completed;
-				xhttp.send("id=" + id + "&status=" + ItemStatus.Completed);
+				xhttp.send("id=" + id + "&task=" + listOfItems[i].task
+						+ "&status=" + ItemStatus.Completed);
 			} else {
 				listOfItems[i].status = ItemStatus.Active;
-				xhttp.send("id=" + id + "&status=" + ItemStatus.Active);
+				xhttp.send("id=" + id + "&task=" + listOfItems[i].task
+						+ "&status=" + ItemStatus.Active);
 				checkAllBox.checked = false;
 			}
 		}
@@ -308,7 +309,8 @@ function save(eventArgs) {
 	// AJAX request to Server
 	xhttp.open("POST", "/api/task/update", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("id=" + id + "&task=" + eventArgs.target.value);
+	xhttp.send("id=" + id + "&task=" + eventArgs.target.value + "&status="
+			+ listOfItems[index].status);
 
 	listOfItems[index].editFlag = false;
 	showByStatus(statusFilter);
