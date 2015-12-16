@@ -12,6 +12,8 @@ var statusFilter = ItemStatus.All;
 var checkAllBox = document.getElementById("checkAll");
 var newTaskField = document.getElementById('newTask');
 var ul = document.getElementById("ToDoList");
+var xhttp = new XMLHttpRequest();
+
 
 // Function for adding task UI
 function addButton() {
@@ -38,8 +40,7 @@ function addItem(taskText) {
 	listOfItems.push(taskItem);
 
 	// AJAX request to Server
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "ajax_add", true);
+	xhttp.open("POST", "/api/task/create", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("id=" + taskItem.id + "&task=" + taskItem.task
 			+ "&status=Active");
@@ -56,10 +57,9 @@ function deleteButton(eventArgs) {
 function deleteItem(id) {
 	var index = getIndexById(id);
 	listOfItems.splice(index, 1);
-	
+
 	// AJAX request to Server
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "ajax_delete", true);
+	xhttp.open("POST", "/api/task/remove", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("id=" + id);
 }
@@ -73,10 +73,9 @@ function changeStatus(eventArgs) {
 	var completeTasksCount = 0;
 
 	// AJAX request to Server
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "ajax_changeStatus", true);
+	xhttp.open("POST", "/api/task/updateStatus", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	
+
 	for (var i = 0; i < listOfItems.length; i++) {
 		if (listOfItems[i].id == id) {
 			if (checkbox.checked) {
@@ -99,9 +98,7 @@ function changeStatus(eventArgs) {
 	}
 
 	showByStatus(statusFilter);
-	
 
-	
 }
 
 // add Listener to all checkboxes, inputs and buttons on the page
@@ -307,17 +304,14 @@ function save(eventArgs) {
 	var id = getDataIdValue(eventArgs.target);
 	var index = getIndexById(id);
 	listOfItems[index].task = eventArgs.target.value;
-	
+
 	// AJAX request to Server
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "ajax_edit", true);
+	xhttp.open("POST", "/api/task/update", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("id=" + id + "&task=" + eventArgs.target.value);
-	
-	
+
 	listOfItems[index].editFlag = false;
 	showByStatus(statusFilter);
-	
 
 }
 
