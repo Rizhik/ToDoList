@@ -307,8 +307,18 @@ function save(eventArgs) {
 	var id = getDataIdValue(eventArgs.target);
 	var index = getIndexById(id);
 	listOfItems[index].task = eventArgs.target.value;
+	
+	// AJAX request to Server
+	var xhttp = new XMLHttpRequest();
+	xhttp.open("POST", "ajax_edit", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("id=" + id + "&task=" + eventArgs.target.value);
+	
+	
 	listOfItems[index].editFlag = false;
 	showByStatus(statusFilter);
+	
+
 }
 
 // Get index of task by its ID

@@ -16,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class WebController extends WebMvcConfigurerAdapter {
 	private static final Logger log = LoggerFactory
 			.getLogger(Application.class);
-	
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String start() {
 		return "index";
@@ -60,12 +60,34 @@ public class WebController extends WebMvcConfigurerAdapter {
 		int startID = task.indexOf("id=") + 3;
 		int endID = task.indexOf("&");
 		String id = task.substring(startID, endID);
-		
+
 		int startStatus = task.indexOf("status=") + 7;
 		String status = task.substring(startStatus);
-		
+
 		dbconnector.setStatus(statement, id, status);
 		log.info("Status changed");
+		connection.close();
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/ajax_edit")
+	public void editTask(@RequestBody String task) throws Exception {
+
+		DataBaseConnector dbconnector = new DataBaseConnector();
+		Connection connection = dbconnector.connectToDB();
+		Statement statement = connection.createStatement();
+
+		int startID = task.indexOf("id=") + 3;
+		int endID = task.indexOf("&");
+		String id = task.substring(startID, endID);
+
+		int startTask = task.indexOf("task=") + 5;
+		String taskDescription = task.substring(startTask);
+
+		dbconnector.setTaskDescription(statement, id, taskDescription);
+		
+		log.info("Task edited");
+		
 		connection.close();
 	}
 }

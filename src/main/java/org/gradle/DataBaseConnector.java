@@ -67,7 +67,7 @@ public class DataBaseConnector {
 	public void setTaskDescription(Statement statement, String id,
 			String newTaskDescription) throws SQLException {
 		String updateQuery = "UPDATE tasks_tbl SET task = '"
-				+ newTaskDescription + "' WHERE id=" + id;
+				+ newTaskDescription + "' WHERE id='" + id+"'";
 		statement.execute(updateQuery);
 	}
 
