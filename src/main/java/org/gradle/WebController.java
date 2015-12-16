@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -24,45 +25,36 @@ public class WebController extends WebMvcConfigurerAdapter {
 
 	@ResponseBody
 	@RequestMapping(value = "/ajax_add")
-	public void saveTask(@RequestBody String task) throws Exception {
+	public void saveTask(@RequestParam String id, @RequestParam String task,
+			@RequestParam String status) throws Exception {
+		DatabaseConnector dbconnector = new DatabaseConnector();
 
-		DataBaseConnector dbconnector = new DataBaseConnector();
-		Connection connection = dbconnector.connectToDB();
-		Statement statement = connection.createStatement();
-
-		Task newTask = Task.parseString(task);
-		dbconnector.addRecord(statement, newTask);
+		Task newTask = new Task(id, task, status);
+		dbconnector.addRecord(newTask);
 		log.info("Task added");
-		connection.close();
+		dbconnector.close();
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/ajax_delete")
-	public void deleteTask(@RequestBody String id) throws Exception {
+	public void deleteTask(@RequestParam String id) throws Exception {
 
-		DataBaseConnector dbconnector = new DataBaseConnector();
+		DatabaseConnector dbconnector = new DatabaseConnector();
 		Connection connection = dbconnector.connectToDB();
 		Statement statement = connection.createStatement();
 
-		dbconnector.deleteRecord(statement, id.substring(3));
+		dbconnector.deleteRecord(statement, id);
 		log.info("Task deleted");
 		connection.close();
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/ajax_changeStatus")
-	public void changeStatus(@RequestBody String task) throws Exception {
+	public void changeStatus(@RequestParam String id, @RequestParam String status) throws Exception {
 
-		DataBaseConnector dbconnector = new DataBaseConnector();
+		DatabaseConnector dbconnector = new DatabaseConnector();
 		Connection connection = dbconnector.connectToDB();
 		Statement statement = connection.createStatement();
-
-		int startID = task.indexOf("id=") + 3;
-		int endID = task.indexOf("&");
-		String id = task.substring(startID, endID);
-
-		int startStatus = task.indexOf("status=") + 7;
-		String status = task.substring(startStatus);
 
 		dbconnector.setStatus(statement, id, status);
 		log.info("Status changed");
@@ -71,23 +63,14 @@ public class WebController extends WebMvcConfigurerAdapter {
 
 	@ResponseBody
 	@RequestMapping(value = "/ajax_edit")
-	public void editTask(@RequestBody String task) throws Exception {
+	public void editTask(@RequestParam String id, @RequestParam String task) throws Exception {
 
-		DataBaseConnector dbconnector = new DataBaseConnector();
-		Connection connection = dbconnector.connectToDB();
-		Statement statement = connection.createStatement();
+		Connection connection = DatabaseConnector.connectToDB();
 
-		int startID = task.indexOf("id=") + 3;
-		int endID = task.indexOf("&");
-		String id = task.substring(startID, endID);
+		dbconnector.setTaskDescription(statement, id, task);
 
-		int startTask = task.indexOf("task=") + 5;
-		String taskDescription = task.substring(startTask);
-
-		dbconnector.setTaskDescription(statement, id, taskDescription);
-		
 		log.info("Task edited");
-		
+
 		connection.close();
 	}
 }
