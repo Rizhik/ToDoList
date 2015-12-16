@@ -2,9 +2,9 @@ package org.gradle;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class DatabaseConnector {
 
@@ -19,31 +19,29 @@ public class DatabaseConnector {
 	}
 
 	public void addRecord(Task task) throws SQLException {
-		Statement statement = connection.createStatement();
-		String insertQuery = "INSERT INTO tasks_tbl (id, task, user_id, status) VALUES ('"
-				+ task.id
-				+ "', '"
-				+ task.taskDescription
-				+ "','"
-				+ task.userID
-				+ "',' " + task.status + "')";
-		statement.execute(insertQuery);
+		PreparedStatement statement = connection
+				.prepareStatement("INSERT INTO tasks_tbl (id, task, user_id, status) VALUES (?, ?, ?, ?)");
+		statement.setString(1, task.id);
+		statement.setString(2, task.taskDescription);
+		statement.setInt(3, task.userID);
+		statement.setString(4, task.status);
+		statement.executeUpdate();
 
 	}
 
 	public void deleteRecord(String id) throws SQLException {
-		Statement statement = connection.createStatement();
-		String deleteQuery = "DELETE FROM tasks_tbl WHERE id = '" + id + "'";
-
-		statement.execute(deleteQuery);
+		PreparedStatement statement = connection
+				.prepareStatement("DELETE FROM tasks_tbl WHERE id = ?");
+		statement.setString(1, id);
+		statement.executeUpdate();
 	}
 
 	public String getTaskDescription(String id) throws SQLException {
-		Statement statement = connection.createStatement();
-		String selectQuery = "SELECT task FROM tasks_tbl WHERE id ='" + id
-				+ "'";
+		PreparedStatement statement = connection
+				.prepareStatement("SELECT task FROM tasks_tbl WHERE id =?");
+		statement.setString(1, id);
 
-		statement.execute(selectQuery);
+		statement.executeQuery();
 		ResultSet result = statement.getResultSet();
 		result.next();
 
@@ -51,11 +49,11 @@ public class DatabaseConnector {
 	}
 
 	public int getUserID(String id) throws SQLException {
-		Statement statement = connection.createStatement();
-		String selectQuery = "SELECT user_id FROM tasks_tbl WHERE id ='" + id
-				+ "'";
+		PreparedStatement statement = connection
+				.prepareStatement("SELECT user_id FROM tasks_tbl WHERE id =?");
+		statement.setString(1, id);
+		statement.executeQuery();
 
-		statement.execute(selectQuery);
 		ResultSet result = statement.getResultSet();
 		result.next();
 
@@ -63,11 +61,11 @@ public class DatabaseConnector {
 	}
 
 	public String getStatus(String id) throws SQLException {
-		Statement statement = connection.createStatement();
-		String selectQuery = "SELECT status FROM tasks_tbl WHERE id = '" + id
-				+ "'";
+		PreparedStatement statement = connection
+				.prepareStatement("SELECT status FROM tasks_tbl WHERE id = ?");
+		statement.setString(1, id);
+		statement.executeQuery();
 
-		statement.execute(selectQuery);
 		ResultSet result = statement.getResultSet();
 		result.next();
 
@@ -75,18 +73,21 @@ public class DatabaseConnector {
 	}
 
 	public void setStatus(String id, String status) throws SQLException {
-		Statement statement = connection.createStatement();
-		String updateQuery = "UPDATE tasks_tbl SET status = '" + status
-				+ "' WHERE id='" + id + "'";
-		statement.execute(updateQuery);
+		PreparedStatement statement = connection
+				.prepareStatement("UPDATE tasks_tbl SET status = ? WHERE id = ?");
+		statement.setString(1, status);
+		statement.setString(2, id);
+
+		statement.executeUpdate();
 	}
 
 	public void setTaskDescription(String id, String newTaskDescription)
 			throws SQLException {
-		Statement statement = connection.createStatement();
-		String updateQuery = "UPDATE tasks_tbl SET task = '"
-				+ newTaskDescription + "' WHERE id='" + id + "'";
-		statement.execute(updateQuery);
+		PreparedStatement statement = connection
+				.prepareStatement("UPDATE tasks_tbl SET task = ? WHERE id=?");
+		statement.setString(1, newTaskDescription);
+		statement.setString(2, id);
+		statement.executeUpdate();
 	}
 
 	private static Connection connectToDB() throws Exception {
