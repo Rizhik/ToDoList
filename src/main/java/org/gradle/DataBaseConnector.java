@@ -5,10 +5,18 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DatabaseConnector {
 
 	private Connection connection;
+
+	private static final Logger log = LoggerFactory
+			.getLogger(Application.class);
 
 	public DatabaseConnector() throws Exception {
 		connection = connectToDB();
@@ -96,9 +104,46 @@ public class DatabaseConnector {
 		String username = "java";
 		String password = "password";
 
-		Connection connection = DriverManager.getConnection(url, username,
-				password);
-		return connection;
+		return DriverManager.getConnection(url, username, password);
 	}
 
+
+
+	public ArrayList<Task> getAllTasks() throws SQLException {
+		Statement statement = connection.createStatement();
+		ResultSet result = statement.executeQuery("SELECT * FROM tasks_tbl");
+
+		ArrayList<Task> tasksList = new ArrayList<Task>();
+
+		while (result.next()) {
+			String id = result.getString(1);
+			String task = result.getString(2);
+			int userID = result.getInt(3);
+			String status = result.getString(4);
+			Task currentTask = new Task(id, task, userID, status);
+			tasksList.add(currentTask);
+		}
+
+		return tasksList;
+	}
+
+	public boolean verifyUserCredentials(String login, String password)
+			throws SQLException {
+		PreparedStatement statement = connection
+				.prepareStatement("SELECT id FROM users_tbl WHERE login=? and password=?");
+		statement.setString(1, login);
+		statement.setString(2, password);
+		statement.executeQuery();
+		ResultSet result = statement.getResultSet();
+
+		if (result != null) {
+			log.info("USER VERIFIED");
+			log.info("LOGIN: " + login);
+			log.info("PASSWORD: " + password);
+			return true;
+		} else {
+			log.info("NO USER");
+			return false;
+		}
+	}
 }

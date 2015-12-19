@@ -29,6 +29,9 @@ public class Application {
 			statement
 					.execute("CREATE TABLE IF NOT EXISTS tasks_tbl(id VARCHAR(8) NOT NULL PRIMARY KEY, task VARCHAR(255) NOT NULL, user_id INT NOT NULL, status VARCHAR(255) NOT NULL CHECK (status IN ('Active', 'Completed')))");
 
+			log.info("Creating table users_tbl");
+			statement
+					.execute("CREATE TABLE IF NOT EXISTS users_tbl(id INT PRIMARY KEY, login VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL)");
 			connection.close();
 
 		} catch (SQLException e) {

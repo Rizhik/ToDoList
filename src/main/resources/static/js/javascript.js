@@ -30,10 +30,10 @@ function addButton() {
 // Add new task to the task list array
 function addItem(taskText) {
 	var taskItem = {
-		id : generateUUID(),
-		task : taskText,
-		status : "Active",
-		editFlag : false
+		"id" : generateUUID(),
+		"task" : taskText,
+		"status" : "Active",
+		"editFlag" : false
 	};
 
 	listOfItems.push(taskItem);
@@ -102,8 +102,23 @@ function changeStatus(eventArgs) {
 
 }
 
+var firstLoadData=true;
+
 // add Listener to all checkboxes, inputs and buttons on the page
 function addListener(currentStatus) {
+
+	// ajax event listener
+	if (firstLoadData) {
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200) {
+				listOfItems = JSON.parse(xhttp.responseText);
+				firstLoadData = false;
+				showByStatus(statusFilter);
+			}
+		}
+		xhttp.open("GET", "/api/task/getcontent", true);
+		xhttp.send();
+	}
 	// Add event listener to CheckAll checkbox
 	checkAllBox.addEventListener("change", checkAll);
 
