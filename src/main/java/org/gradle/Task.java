@@ -1,15 +1,18 @@
 package org.gradle;
 
 public class Task {
-	String id;
-	String taskDescription;
-	String status;
-	boolean editFlag = false;
-	int userID;
+	public String id;
+	public String task;
+	public String status;
+	public boolean editFlag = false;
+	public int userID;
+
+	public Task() {
+	}
 
 	public Task(String id, String taskDescription, int userID, String status) {
 		this.id = id;
-		this.taskDescription = taskDescription;
+		this.task = taskDescription;
 		this.userID = userID;
 		this.status = status;
 	}

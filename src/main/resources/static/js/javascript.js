@@ -1,4 +1,5 @@
 'use strict';
+var userID;
 
 var listOfItems = [];
 
@@ -12,7 +13,6 @@ var statusFilter = ItemStatus.All;
 var checkAllBox = document.getElementById("checkAll");
 var newTaskField = document.getElementById('newTask');
 var ul = document.getElementById("ToDoList");
-var xhttp = new XMLHttpRequest();
 
 // Function for adding task UI
 function addButton() {
@@ -33,16 +33,18 @@ function addItem(taskText) {
 		"id" : generateUUID(),
 		"task" : taskText,
 		"status" : "Active",
+		"userID" : userID,
 		"editFlag" : false
 	};
 
 	listOfItems.push(taskItem);
 
 	// AJAX request to Server
+	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "/api/task/create", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("id=" + taskItem.id + "&task=" + taskItem.task
-			+ "&status=Active");
+			+ "&status=Active"+"&userID="+userID);
 }
 
 // remove deleted task from the screen and run deleteItem() function
@@ -58,6 +60,7 @@ function deleteItem(id) {
 	listOfItems.splice(index, 1);
 
 	// AJAX request to Server
+	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "/api/task/remove", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("id=" + id);
@@ -72,6 +75,7 @@ function changeStatus(eventArgs) {
 	var completeTasksCount = 0;
 
 	// AJAX request to Server
+	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "/api/task/update", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
@@ -80,7 +84,7 @@ function changeStatus(eventArgs) {
 			if (checkbox.checked) {
 				listOfItems[i].status = ItemStatus.Completed;
 				xhttp.send("id=" + id + "&task=" + listOfItems[i].task
-						+ "&status=" + ItemStatus.Completed);
+						+ "&status=" + ItemStatus.Completed+"&userID"+userID);
 			} else {
 				listOfItems[i].status = ItemStatus.Active;
 				xhttp.send("id=" + id + "&task=" + listOfItems[i].task
@@ -102,13 +106,14 @@ function changeStatus(eventArgs) {
 
 }
 
-var firstLoadData=true;
+var firstLoadData = true;
 
 // add Listener to all checkboxes, inputs and buttons on the page
 function addListener(currentStatus) {
 
-	// ajax event listener
+	// ajax event listener for loading data from server
 	if (firstLoadData) {
+		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (xhttp.readyState == 4 && xhttp.status == 200) {
 				listOfItems = JSON.parse(xhttp.responseText);
@@ -118,6 +123,7 @@ function addListener(currentStatus) {
 		}
 		xhttp.open("GET", "/api/task/getcontent", true);
 		xhttp.send();
+		userID = readUserIdFromCookie();
 	}
 	// Add event listener to CheckAll checkbox
 	checkAllBox.addEventListener("change", checkAll);
@@ -322,6 +328,7 @@ function save(eventArgs) {
 	listOfItems[index].task = eventArgs.target.value;
 
 	// AJAX request to Server
+	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "/api/task/update", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("id=" + id + "&task=" + eventArgs.target.value + "&status="
@@ -353,4 +360,20 @@ function getElementByDataId(id) {
 		}
 	}
 	return null;
+}
+
+function readUserIdFromCookie() {
+	var allcookies = document.cookie;
+
+	// Get all the cookies pairs in an array
+	var cookiearray = allcookies.split(';');
+
+	// take key value pair out of this array
+	for (var i = 0; i < cookiearray.length; i++) {
+		var name = cookiearray[i].split('=')[0];
+		if (name == 'current_user_id') {
+			return cookiearray[i].split('=')[1];
+		}
+		return 0;
+	}
 }

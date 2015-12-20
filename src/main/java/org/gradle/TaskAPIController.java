@@ -1,13 +1,11 @@
 package org.gradle;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,10 +19,11 @@ public class TaskAPIController {
 	@ResponseBody
 	@RequestMapping(value = "/api/task/create")
 	public void save(@RequestParam String id, @RequestParam String task,
-			@RequestParam String status) throws Exception {
+			@RequestParam String status, @RequestParam String userID)
+			throws Exception {
 
 		DatabaseConnector dbconnector = new DatabaseConnector();
-		Task newTask = new Task(id, task, 1, status);
+		Task newTask = new Task(id, task, Integer.parseInt(userID), status);
 		dbconnector.addRecord(newTask);
 		log.info("Task created");
 		dbconnector.close();
@@ -54,28 +53,13 @@ public class TaskAPIController {
 
 	@ResponseBody
 	@RequestMapping(value = "/api/task/getcontent", method = RequestMethod.GET)
-	public String edit() throws Exception {
+	public ArrayList<Task> list(@CookieValue("current_user_id") String userID)
+			throws Exception {
 		DatabaseConnector dbconnector = new DatabaseConnector();
-		ArrayList<Task> tasksList = dbconnector.getAllTasks();
+		ArrayList<Task> tasksList = dbconnector.getAllTasks(Integer
+				.parseInt(userID));
 		dbconnector.close();
-
-		String json = "";
-		ArrayList<String> temp;
-		for (int i = 0; i < tasksList.size(); i++) {
-			temp = new ArrayList<String>();
-			temp.add("\"id\":\"" + tasksList.get(i).id + "\"");
-			temp.add("\"task\":\"" + tasksList.get(i).taskDescription + "\"");
-			temp.add("\"userID\":\"" + tasksList.get(i).userID + "\"");
-			temp.add("\"status\":\"" + tasksList.get(i).status + "\"");
-			temp.add("\"editFlag\":false");
-			if (json.length() != 0) {
-				json = json + ",";
-			}
-			String currentRow = temp.toString();
-			json = json + "{"
-					+ currentRow.substring(1, currentRow.length() - 1) + "}";
-		}
-
-		return "[" + json + "]";
+		return tasksList;
 	}
+
 }

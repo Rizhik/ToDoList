@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
@@ -30,7 +29,7 @@ public class DatabaseConnector {
 		PreparedStatement statement = connection
 				.prepareStatement("INSERT INTO tasks_tbl (id, task, user_id, status) VALUES (?, ?, ?, ?)");
 		statement.setString(1, task.id);
-		statement.setString(2, task.taskDescription);
+		statement.setString(2, task.task);
 		statement.setInt(3, task.userID);
 		statement.setString(4, task.status);
 		statement.executeUpdate();
@@ -107,18 +106,19 @@ public class DatabaseConnector {
 		return DriverManager.getConnection(url, username, password);
 	}
 
+	public ArrayList<Task> getAllTasks(int userID) throws SQLException {
 
-
-	public ArrayList<Task> getAllTasks() throws SQLException {
-		Statement statement = connection.createStatement();
-		ResultSet result = statement.executeQuery("SELECT * FROM tasks_tbl");
+		PreparedStatement statement = connection
+				.prepareStatement("SELECT * FROM tasks_tbl WHERE user_id=?");
+		statement.setInt(1, userID);
+		statement.executeQuery();
+		ResultSet result = statement.getResultSet();
 
 		ArrayList<Task> tasksList = new ArrayList<Task>();
 
 		while (result.next()) {
 			String id = result.getString(1);
 			String task = result.getString(2);
-			int userID = result.getInt(3);
 			String status = result.getString(4);
 			Task currentTask = new Task(id, task, userID, status);
 			tasksList.add(currentTask);
@@ -127,23 +127,49 @@ public class DatabaseConnector {
 		return tasksList;
 	}
 
-	public boolean verifyUserCredentials(String login, String password)
-			throws SQLException {
+	public ResultSet getUser(String login) throws SQLException {
 		PreparedStatement statement = connection
-				.prepareStatement("SELECT id FROM users_tbl WHERE login=? and password=?");
+				.prepareStatement("SELECT * FROM users_tbl WHERE login=?");
 		statement.setString(1, login);
-		statement.setString(2, password);
 		statement.executeQuery();
-		ResultSet result = statement.getResultSet();
+		return statement.getResultSet();
+	}
 
-		if (result != null) {
-			log.info("USER VERIFIED");
-			log.info("LOGIN: " + login);
-			log.info("PASSWORD: " + password);
+	public boolean verifyPassword(String password, ResultSet result)
+			throws SQLException {
+		if (result.first() && result.getString(3).equals(password)) {
+			log.info("USER VERIFIED LOGIN: " + result.getString(2)
+					+ " PASSWORD: " + password);
 			return true;
 		} else {
-			log.info("NO USER");
+			log.info("CREDENTIALS ARE WRONG");
 			return false;
 		}
+	}
+
+	public int getUserID(ResultSet result) throws SQLException {
+		result.first();
+		return result.getInt(1);
+	}
+
+	public boolean createNewUser(String login, String password) {
+		try {
+			PreparedStatement statement = connection
+					.prepareStatement("INSERT INTO users_tbl  (id, login, password) VALUES (0, ?, ?)");
+			statement.setString(1, login);
+			statement.setString(2, password);
+			statement.executeUpdate();
+
+			log.info("USER CREATED");
+
+			return true;
+
+		} catch (SQLException e) {
+
+			log.info("USER CAN NOT BE CREATED");
+
+			return false;
+		}
+
 	}
 }
