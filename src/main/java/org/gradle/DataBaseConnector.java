@@ -127,29 +127,29 @@ public class DatabaseConnector {
 		return tasksList;
 	}
 
-	public ResultSet getUser(String login) throws SQLException {
+	public User getUser(String login) throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement("SELECT * FROM users_tbl WHERE login=?");
 		statement.setString(1, login);
 		statement.executeQuery();
-		return statement.getResultSet();
+		ResultSet result = statement.getResultSet();
+		result.first();
+		User user = new User(result.getInt(1), result.getString(2),
+				result.getString(3));
+		return user;
 	}
 
-	public boolean verifyPassword(String password, ResultSet result)
+	public boolean verifyPassword(String password, User user)
 			throws SQLException {
-		if (result.first() && result.getString(3).equals(password)) {
-			log.info("USER VERIFIED LOGIN: " + result.getString(2)
-					+ " PASSWORD: " + password);
+
+		if (user.password.equals(password)) {
+			log.info("USER VERIFIED LOGIN: " + user.login + " PASSWORD: "
+					+ user.password);
 			return true;
 		} else {
 			log.info("CREDENTIALS ARE WRONG");
 			return false;
 		}
-	}
-
-	public int getUserID(ResultSet result) throws SQLException {
-		result.first();
-		return result.getInt(1);
 	}
 
 	public boolean createNewUser(String login, String password) {

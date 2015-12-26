@@ -1,0 +1,48 @@
+@CHARSET "UTF-8";
+
+#Signin {
+	display: inline-block;
+	width: 592px;
+}
+
+#Signup {
+	display: inline-block;
+	width: 592px;
+}
+
+#login_title {
+	margin-left: 120px;
+}
+
+#registration_title {
+	margin-left: 70px;
+}
+
+.inputfield {
+	width: 280px;
+	height: 24px;
+	padding: 8px;
+	border: 1px solid #a7a7a7;
+	font-size: 1.230769230769231em;
+	margin:10px;
+}
+
+label {
+	font-size: 20px;
+	font-weight: bold;
+	margin-left: 10px;
+}
+
+.button {
+	width: 100px;
+	height: 35px;
+	padding: 3px 10px 5px 10px;
+	font-weight: bold;
+	text-align: center;
+	color: white;
+	background-color: #c0c0c0;
+	font-size: 1.385em;
+	border: none;
+	font-family: Arial,sans-serif;
+	margin: 0px 10px 10px 10px;
+}

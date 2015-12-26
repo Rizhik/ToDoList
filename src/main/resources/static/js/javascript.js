@@ -27,6 +27,27 @@ function addButton() {
 	showByStatus(statusFilter);
 }
 
+function ajax(url, method, data, onSucccess) {
+	var xhttp = new XMLHttpRequest();
+	xhttp.open(method, url, true);
+	xhttp.setRequestHeader("Accept", "application/json");
+	xhttp.setRequestHeader("Content-type", "application/json");
+	if (method == 'POST') {
+		xhttp.send(data);
+	} else {
+		xhttp.send();
+	}
+
+	if (onSucccess)
+
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200) {
+
+				onSucccess(xhttp.responseText);
+			}
+		}
+}
+
 // Add new task to the task list array
 function addItem(taskText) {
 	var taskItem = {
@@ -39,12 +60,9 @@ function addItem(taskText) {
 
 	listOfItems.push(taskItem);
 
+	var json = JSON.stringify(taskItem);
 	// AJAX request to Server
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "/api/task/create", true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("id=" + taskItem.id + "&task=" + taskItem.task
-			+ "&status=Active"+"&userID="+userID);
+	ajax("/api/task/create", "POST", json);
 }
 
 // remove deleted task from the screen and run deleteItem() function
@@ -57,13 +75,13 @@ function deleteButton(eventArgs) {
 // delete task from the task list
 function deleteItem(id) {
 	var index = getIndexById(id);
-	listOfItems.splice(index, 1);
-
+	
 	// AJAX request to Server
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "/api/task/remove", true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("id=" + id);
+	var json = JSON.stringify(listOfItems[index]);
+	
+	ajax("/api/task/remove", "POST", json);
+
+	listOfItems.splice(index, 1);
 }
 
 // Task can be Active or Completed. When user check checkbox, status of task is
@@ -74,21 +92,21 @@ function changeStatus(eventArgs) {
 	var checkbox = eventArgs.target;
 	var completeTasksCount = 0;
 
-	// AJAX request to Server
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "/api/task/update", true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
 	for (var i = 0; i < listOfItems.length; i++) {
 		if (listOfItems[i].id == id) {
 			if (checkbox.checked) {
 				listOfItems[i].status = ItemStatus.Completed;
-				xhttp.send("id=" + id + "&task=" + listOfItems[i].task
-						+ "&status=" + ItemStatus.Completed+"&userID"+userID);
+
+				// AJAX request to Server
+				var json = JSON.stringify(listOfItems[i]);
+				ajax("/api/task/update", "POST", json);
 			} else {
 				listOfItems[i].status = ItemStatus.Active;
-				xhttp.send("id=" + id + "&task=" + listOfItems[i].task
-						+ "&status=" + ItemStatus.Active);
+
+				// AJAX request to Server
+				var json = JSON.stringify(listOfItems[i]);
+				ajax("/api/task/update", "POST", json);
+
 				checkAllBox.checked = false;
 			}
 		}
@@ -108,23 +126,22 @@ function changeStatus(eventArgs) {
 
 var firstLoadData = true;
 
+
 // add Listener to all checkboxes, inputs and buttons on the page
 function addListener(currentStatus) {
 
 	// ajax event listener for loading data from server
 	if (firstLoadData) {
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (xhttp.readyState == 4 && xhttp.status == 200) {
-				listOfItems = JSON.parse(xhttp.responseText);
-				firstLoadData = false;
-				showByStatus(statusFilter);
-			}
-		}
-		xhttp.open("GET", "/api/task/getcontent", true);
-		xhttp.send();
+		// AJAX request to Server
+
+		ajax("/api/task/getcontent", "GET","" ,function (responseText) {
+			listOfItems = JSON.parse(responseText);
+			firstLoadData = false;
+			showByStatus(statusFilter);
+		});
 		userID = readUserIdFromCookie();
 	}
+
 	// Add event listener to CheckAll checkbox
 	checkAllBox.addEventListener("change", checkAll);
 
@@ -326,15 +343,12 @@ function save(eventArgs) {
 	var id = getDataIdValue(eventArgs.target);
 	var index = getIndexById(id);
 	listOfItems[index].task = eventArgs.target.value;
+	listOfItems[index].editFlag = false;
 
 	// AJAX request to Server
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "/api/task/update", true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("id=" + id + "&task=" + eventArgs.target.value + "&status="
-			+ listOfItems[index].status);
+	var json = JSON.stringify(listOfItems[index]);
+	ajax("/api/task/update", "POST", json);
 
-	listOfItems[index].editFlag = false;
 	showByStatus(statusFilter);
 
 }

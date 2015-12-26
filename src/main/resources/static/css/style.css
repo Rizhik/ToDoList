@@ -1,201 +1,202 @@
-	/*---------------------LAYOUT--------------------------------------------*/
+/*---------------------LAYOUT--------------------------------------------*/
+*>.Grid {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	display: table;
+	width: 100%;
+	height: 100%;
+}
 
-		*>.Grid {
-			-moz-box-sizing: border-box;
-			-webkit-box-sizing: border-box;
-			box-sizing: border-box;
-			display: table;
-			width: 100%;
-			height: 100%;
-		}
+.Grid>.Row {
+	display: table-row;
+	height: 1px;
+}
 
-		.Grid>.Row {
-			display: table-row;
-			height: 1px;
-		}
-		.Grid>.Row.Expand {
-			height: auto;
-		}
-		.Grid>.Column, .Grid>.Row>.Column {
-			display: table-cell;
-			width: 1px;
-		}
-		.Grid>.Column.Expand, .Grid>.Row>.Column.Expand {
-			width: auto;
-		}
+.Grid>.Row.Expand {
+	height: auto;
+}
+
+.Grid>.Column, .Grid>.Row>.Column {
+	display: table-cell;
+	width: 1px;
+}
+
+.Grid>.Column.Expand, .Grid>.Row>.Column.Expand {
+	width: auto;
+}
 /*----------------------------------------------------------------------*/
-
-
 
 /*--------------------------CONTENT------------------------------------*/
-		html, body {
-			height: 100%;
-			margin: 0em;
-		}	
+html, body {
+	height: 100%;
+	margin: 0em;
+}
 
-		body{
-			font-family: "Open Sans","Helvetica", Arial, sans-serif;
-		}
-		body>.Grid {
-			background: #FAFAFA;
-			margin: 0em;
-			padding: 0em;
-			table-layout: fixed;
-		}
-		
-		#Header {
-			background: #DB4C3F;
-			height: 50pt;
-		}
-		#Main {
-			background: #FAFAFA;
-		}
-		#Footer {
-			text-align: center;
-			color: #BFBFBF;
-			font-size: 10px;
-		}
+body {
+	font-family: "Open Sans", "Helvetica", Arial, sans-serif;
+}
 
-		#RSide {
-			background: #FAFAFA;
-			width: 150px;
-		}
-		#Content {
-			background: white;
-		}
-		#Menu {
-			background: #FAFAFA;
-			width:150pt;
-		}
-		
-		p, h1, h2, h3 {
-			margin: 10pt;
-		}
+body>.Grid {
+	background: #FAFAFA;
+	margin: 0em;
+	padding: 0em;
+	table-layout: fixed;
+}
 
+#Header {
+	background: #DB4C3F;
+	height: 50pt;
+}
+#Name{
+	float: left;
+}
 
-		#TimeFilter,
-		#GroupFilter,
-		#Controls{
-			list-style: none;
-			margin-bottom: 2px;
-			padding: 10px;
-		}
+#Signout{
+	float: right;
+	padding-top:24.5px;
+	padding-right:20px;
+}
 
-		#TimeFilter li,
-		#GroupFilter li,
-		#Controls li{
-			margin-bottom: 2px;
-			padding: 10px;
-			height: 20px;
-			font-size: 14px;
-			color: #303333;
-		}
+#Main {
+	background: #FAFAFA;
+}
+
+#Footer {
+	text-align: center;
+	color: #BFBFBF;
+	font-size: 10px;
+}
+
+#RSide {
+	background: #FAFAFA;
+	width: 150px;
+}
+
+#Content {
+	background: white;
+}
+
+#Menu {
+	background: #FAFAFA;
+	width: 150pt;
+}
+
+p, h1, h2, h3 {
+	margin: 10pt;
+}
+
+#TimeFilter, #GroupFilter, #Controls {
+	list-style: none;
+	margin-bottom: 2px;
+	padding: 10px;
+}
+
+#TimeFilter li, #GroupFilter li, #Controls li {
+	margin-bottom: 2px;
+	padding: 10px;
+	height: 20px;
+	font-size: 14px;
+	color: #303333;
+}
 /*----------------------------------------------------------------------*/
+#ToDoList {
+	list-style: none;
+}
 
+.controls {
+	display: none;
+	color: #777;
+	margin-bottom: 20px;
+}
 
+.inputFields {
+	position: relative;
+	margin: 0px auto 20px;
+}
 
-		#ToDoList{
-			list-style: none;
-		}
+#checkAll {
+	position: absolute;
+	left: 14px;
+	top: 17px;
+	background-color: red;
+	text-align: center;
+}
 
-		.controls{
-			display: none;
-			color:#777;
-			margin-bottom: 20px;
-		}
+#newTask {
+	font-size: 20px;
+	width: 90%;
+	height: 50px;
+	padding-left: 40px;
+	display: block;
+	border-radius: 5px;
+	border: 1px solid grey;
+}
 
-		.inputFields{
-			position: relative;
-			margin: 0px auto 20px;
+button {
+	border-radius: 3px;
+	border: none;
+}
 
-		}
+#ToDoList li {
+	font-size: 20px;
+	position: relative;
+	height: 30px;
+	padding: 7px;
+}
 
-		#checkAll{
-			position: absolute;
-			left:14px;
-			top:17px;
-			background-color: red;
-			text-align: center;
-		}
+#ToDoList li input {
+	position: absolute;
+	top: 12px;
+	left: -30px;
+}
 
-		#newTask{
-			font-size: 20px;
-			width:90%;
-			height:50px;
-			padding-left: 40px;
-			display: block;
-			border-radius: 5px;
-			border: 1px solid grey;
-		}
+.completed {
+	text-decoration: line-through;
+	color: gray;
+}
 
-		button{
-			border-radius: 3px;
-			border:none;
-		}
+.deleteButton {
+	color: #AF5B5E;
+	font-weight: bold;
+	padding: 0px;
+	border: none;
+	background-image: none;
+	background-color: white;
+	position: absolute;
+	top: 12px;
+	right: 17px;
+	display: none;
+}
 
-		#ToDoList li{
-			font-size: 20px;
-			position: relative;
-			height:30px;
-			padding: 7px;
-		}
+#ToDoList li:hover button {
+	display: inline;
+}
 
-		#ToDoList li input{
-			position: absolute;
-			top:12px;
-			left:-30px;
-		}
+div[name="buttons"] {
+	margin-top: 20px;
+}
 
-		.completed{
-			text-decoration: line-through;
-			color:gray;
-		}
+#ToDoList li input[type="text"] {
+	font-size: 20px;
+	width: 310px;
+	height: 36px;
+	border-radius: 5px;
+	border: 2px solid lightblue;;
+	margin: -11px;
+	padding-left: 10px;
+	display: none;
+}
 
-		.deleteButton{
-			color:#AF5B5E;
-			font-weight:bold;
-			padding: 0px;
-			border:none;
-			background-image:none;
-			background-color:white;
-			position: absolute;
-			top:12px;
-			right:17px;
-			display: none;
-		}
+#ToDoList li.editMode input {
+	display: inline-block;
+}
 
-		#ToDoList li:hover button 
-		{
-			display: inline;
-		}
+#ToDoList li.editMode label, #ToDoList li.editMode button, #ToDoList li.editMode input[type="checkbox"]
+	{
+	display: none;
+}
 
-		div[name="buttons"]{
-			margin-top: 20px;
-		}
-
-		#ToDoList li input[type="text"]{
-			font-size: 20px;
-			width: 310px;
-			height: 36px;
-			border-radius: 5px;
-			border: 2px solid lightblue;;
-			margin:-11px;
-			padding-left:10px;
-			display:none;
-		}
-		#ToDoList li.editMode input{
-			display: inline-block;
-		}
-
-		#ToDoList li.editMode label,
-		#ToDoList li.editMode button,
-		#ToDoList li.editMode input[type="checkbox"] 
-		{
-			display: none;
-		}
-
-		h1{
-			padding-left: 15px; 
-		}
-
-
+h1 {
+	padding-left: 15px;
+}
