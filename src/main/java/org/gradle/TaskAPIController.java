@@ -22,7 +22,7 @@ public class TaskAPIController {
 			throws Exception {
 
 		DatabaseConnector dbconnector = new DatabaseConnector();
-		dbconnector.addRecord(task);
+		dbconnector.addTask(task);
 		log.info("Task created");
 		dbconnector.close();
 	}
@@ -32,7 +32,7 @@ public class TaskAPIController {
 	public void delete(@RequestBody Task task) throws Exception {
 
 		DatabaseConnector dbconnector = new DatabaseConnector();
-		dbconnector.deleteRecord(task.id);
+		dbconnector.deleteTask(task.id);
 		log.info("Task removed");
 		dbconnector.close();
 	}

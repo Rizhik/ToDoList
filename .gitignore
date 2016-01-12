@@ -1,4 +1,6 @@
 /build/
+/bin/
+/test-output/
 
 .gradle/2.3/taskArtifacts/cache.properties
 
@@ -36,24 +38,5 @@
 
 .classpath
 
-bin/templates/index.html
 
-bin/static/js/uuid.js
 
-bin/static/js/Tree.js
-
-bin/static/js/javascript.js
-
-bin/static/css/style.css
-
-bin/org/gradle/Application.class
-
-bin/org/gradle/DataBaseConnector.class
-
-bin/org/gradle/resource.xml
-
-bin/org/gradle/Task.class
-
-bin/org/gradle/test-resource.xml
-
-bin/org/gradle/WebController.class

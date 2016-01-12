@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
@@ -12,20 +13,44 @@ import org.slf4j.LoggerFactory;
 
 public class DatabaseConnector {
 
-	private Connection connection;
-
 	private static final Logger log = LoggerFactory
 			.getLogger(Application.class);
 
+	private Connection connection;
+
+	/**
+	 * TODO: URL, username and password as argument Is it better to pass url,
+	 * username and password as argument to our function?
+	 */
 	public DatabaseConnector() throws Exception {
-		connection = connectToDB();
+		String url = "jdbc:mysql://localhost:3306/javabase";
+		String username = "java";
+		String password = "password";
+		connection = DriverManager.getConnection(url, username, password);
 	}
 
 	public void close() throws Exception {
 		connection.close();
 	}
 
-	public void addRecord(Task task) throws SQLException {
+	public Connection getConnection() {
+		return connection;
+	}
+
+	public void initializeDatabase() throws Exception {
+
+		Statement statement = connection.createStatement();
+		log.info("Creating table tasks_tbl");
+		statement
+				.execute("CREATE TABLE IF NOT EXISTS tasks_tbl(id VARCHAR(8) NOT NULL PRIMARY KEY, task VARCHAR(255) NOT NULL, user_id INT NOT NULL, status VARCHAR(255) NOT NULL CHECK (status IN ('Active', 'Completed')))");
+
+		log.info("Creating table users_tbl");
+		statement
+				.execute("CREATE TABLE IF NOT EXISTS users_tbl(id INT AUTO_INCREMENT PRIMARY KEY, login VARCHAR(255) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL)");
+		close();
+	}
+
+	public void addTask(Task task) throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement("INSERT INTO tasks_tbl (id, task, user_id, status) VALUES (?, ?, ?, ?)");
 		statement.setString(1, task.id);
@@ -33,10 +58,9 @@ public class DatabaseConnector {
 		statement.setInt(3, task.userID);
 		statement.setString(4, task.status);
 		statement.executeUpdate();
-
 	}
 
-	public void deleteRecord(String id) throws SQLException {
+	public void deleteTask(String id) throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement("DELETE FROM tasks_tbl WHERE id = ?");
 		statement.setString(1, id);
@@ -80,12 +104,16 @@ public class DatabaseConnector {
 	}
 
 	public void setStatus(String id, String status) throws SQLException {
-		PreparedStatement statement = connection
-				.prepareStatement("UPDATE tasks_tbl SET status = ? WHERE id = ?");
-		statement.setString(1, status);
-		statement.setString(2, id);
+		if (status.equals("Active") || status.equals("Completed")) {
+			PreparedStatement statement = connection
+					.prepareStatement("UPDATE tasks_tbl SET status = ? WHERE id = ?");
+			statement.setString(1, status);
+			statement.setString(2, id);
 
-		statement.executeUpdate();
+			statement.executeUpdate();
+		} else {
+			log.info("STATUS WAS NOT UPDATED. Status could be 'Active' or 'Completed'.");
+		}
 	}
 
 	public void setTaskDescription(String id, String newTaskDescription)
@@ -95,15 +123,6 @@ public class DatabaseConnector {
 		statement.setString(1, newTaskDescription);
 		statement.setString(2, id);
 		statement.executeUpdate();
-	}
-
-	private static Connection connectToDB() throws Exception {
-
-		String url = "jdbc:mysql://localhost:3306/javabase";
-		String username = "java";
-		String password = "password";
-
-		return DriverManager.getConnection(url, username, password);
 	}
 
 	public ArrayList<Task> getAllTasks(int userID) throws SQLException {

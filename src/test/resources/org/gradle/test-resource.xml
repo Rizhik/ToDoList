@@ -1,1 +1,44 @@
-<some-resource/>
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="Database Connector" verbose="1">
+
+	<test name="Database initialization">
+		<packages>
+			<package name="org.gradle" />
+		</packages>
+		<groups>
+			<run>
+				<include name="DatabaseInit" />
+			</run>
+		</groups>
+		<classes>
+			<class name="org.gradle.DatabaseConnectorTest" />
+		</classes>
+	</test>
+	<test name="Task Management">
+		<packages>
+			<package name="org.gradle" />
+		</packages>
+		<groups>
+			<run>
+				<include name="TaskManagement" />
+			</run>
+		</groups>
+		<classes>
+			<class name="org.gradle.DatabaseConnectorTaskManagementTest" />
+		</classes>
+	</test>
+
+	<test name="User Management">
+		<packages>
+			<package name="org.gradle" />
+		</packages>
+		<groups>
+			<run>
+				<include name="UserManagement" />
+			</run>
+		</groups>
+		<classes>
+			<class name="org.gradle.DatabaseConnectorUserManagementTest" />
+		</classes>
+	</test>
+</suite>
