@@ -18,15 +18,12 @@ public class DatabaseConnector {
 
 	private Connection connection;
 
-	/**
-	 * TODO: URL, username and password as argument Is it better to pass url,
-	 * username and password as argument to our function?
-	 */
-	public DatabaseConnector() throws Exception {
-		String url = "jdbc:mysql://localhost:3306/javabase";
-		String username = "java";
-		String password = "password";
-		connection = DriverManager.getConnection(url, username, password);
+	public DatabaseConnector(String url, String username, String password) {
+		try {
+			connection = DriverManager.getConnection(url, username, password);
+		} catch (SQLException e) {
+			log.debug(e.toString());
+		}
 	}
 
 	public void close() throws Exception {

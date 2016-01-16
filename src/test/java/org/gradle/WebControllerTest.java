@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = Application.class)
+@ContextConfiguration(classes = { Application.class, TestConfiguration.class })
 @WebAppConfiguration
 public class WebControllerTest {
 
@@ -106,7 +106,7 @@ public class WebControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(cookie().exists("current_user_id"))
 				.andExpect(view().name("index"));
-		DatabaseConnector dbconnector = new DatabaseConnector();
+		DatabaseConnector dbconnector = new RealDbConnectionProvider().create();
 		dbconnector.deleteUser("test_web_controller_login");
 	}
 

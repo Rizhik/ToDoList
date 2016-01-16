@@ -3,6 +3,7 @@ package org.gradle;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 @Controller
 public class WebController extends WebMvcConfigurerAdapter {
+
+	@Autowired
+	public DbConnectionProvider DbConnectionProvider;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(
@@ -29,7 +33,7 @@ public class WebController extends WebMvcConfigurerAdapter {
 			@RequestParam String password, HttpServletResponse response)
 			throws Exception {
 
-		DatabaseConnector dbconnector = new DatabaseConnector();
+		DatabaseConnector dbconnector = DbConnectionProvider.create();
 
 		User user = dbconnector.getUser(login);
 
@@ -55,7 +59,7 @@ public class WebController extends WebMvcConfigurerAdapter {
 	public String signup(@RequestParam String login,
 			@RequestParam String password, HttpServletResponse response)
 			throws Exception {
-		DatabaseConnector dbconnector = new DatabaseConnector();
+		DatabaseConnector dbconnector = DbConnectionProvider.create();
 		boolean result = dbconnector.createNewUser(login, password);
 		if (result) {
 			User user = dbconnector.getUser(login);

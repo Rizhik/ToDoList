@@ -17,7 +17,7 @@ public class DatabaseConnectorUserManagementTest {
 
 	@BeforeGroups(groups = { "UserManagement" })
 	public void setup() throws Exception {
-		dbconnector = new DatabaseConnector();
+		dbconnector = new TestDbConnectionProvider().create();
 	}
 
 	@AfterGroups(groups = { "UserManagement" })

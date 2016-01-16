@@ -19,7 +19,7 @@ public class DatabaseConnectorTaskManagementTest {
 
 	@BeforeGroups(groups = { "TaskManagement" })
 	public void setup() throws Exception {
-		dbconnector = new DatabaseConnector();
+		dbconnector = new TestDbConnectionProvider().create();
 	}
 
 	@BeforeMethod(groups = { "TaskManagement" })
