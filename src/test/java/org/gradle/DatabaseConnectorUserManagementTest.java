@@ -144,9 +144,10 @@ public class DatabaseConnectorUserManagementTest {
 
 	}
 
-	@Test(groups = { "UserManagement" }, expectedExceptions = SQLException.class)
+	@Test(groups = { "UserManagement" })
 	public void getUser_loginNotExists() throws SQLException {
-		dbconnector.getUser("login_not_exists");
+		User user = dbconnector.getUser("login_not_exists");
+		AssertJUnit.assertNull(user);
 	}
 
 	@Test(groups = { "UserManagement" })

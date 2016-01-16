@@ -25,15 +25,7 @@ public class DatabaseConnectorTaskManagementTest {
 	@BeforeMethod(groups = { "TaskManagement" })
 	public void prepareTaskTestData() {
 		try {
-			PreparedStatement statement = dbconnector
-					.getConnection()
-					.prepareStatement(
-							"INSERT INTO tasks_tbl (id, task, user_id, status) VALUES (?, ?, ?, ?)");
-			statement.setString(1, task.id);
-			statement.setString(2, task.task);
-			statement.setInt(3, task.userID);
-			statement.setString(4, task.status);
-			statement.executeUpdate();
+			dbconnector.addTask(task);
 		} catch (SQLException e) {
 			System.out.println("BEFORE METHOD FAILED: " + e);
 		}
@@ -108,197 +100,86 @@ public class DatabaseConnectorTaskManagementTest {
 	@Test(groups = { "TaskManagement" })
 	public void getAllTasks() throws Exception {
 
-		ArrayList<Task> task_array = new ArrayList<Task>();
+		ArrayList<Task> expected_result = new ArrayList<Task>();
 
-		task_array.add(task);
+		expected_result.add(task);
 
 		task = new Task("-124", "2 task under test", -25, "Completed");
-		task_array.add(task);
+		expected_result.add(task);
 		prepareTaskTestData();
 
 		task = new Task("-125", "3 task under test", -25, "Active");
-		task_array.add(task);
+		expected_result.add(task);
 		prepareTaskTestData();
 
-		PreparedStatement statement = dbconnector.getConnection()
-				.prepareStatement("SELECT * FROM tasks_tbl WHERE user_id=?");
-		statement.setInt(1, task.userID);
-		statement.execute();
+		ArrayList<Task> actual_result = dbconnector.getAllTasks(task.userID);
 
-		ResultSet result = statement.getResultSet();
-
-		ArrayList<Task> result_array = new ArrayList<Task>();
-
-		while (result.next()) {
-			Task current_task = new Task(result.getString(1),
-					result.getString(2), result.getInt(3), result.getString(4));
-			result_array.add(current_task);
-		}
 		AssertJUnit.assertEquals(
 				"TEST FAILED: result set length are different",
-				task_array.size(), result_array.size());
+				expected_result.size(), actual_result.size());
 		AssertJUnit.assertFalse(
 				"TEST FAILED: database return empty result set",
-				result_array.isEmpty());
-		for (int i = 0; i < task_array.size(); i++) {
+				actual_result.isEmpty());
+		for (int i = 0; i < expected_result.size(); i++) {
 			AssertJUnit.assertEquals("TEST FAILED: task ids are different",
-					task_array.get(i).id, result_array.get(i).id);
+					expected_result.get(i).id, actual_result.get(i).id);
 			AssertJUnit.assertEquals(
 					"TEST FAILED: task descriptions are different",
-					task_array.get(i).task, result_array.get(i).task);
+					expected_result.get(i).task, actual_result.get(i).task);
 			AssertJUnit.assertEquals("TEST FAILED: user ids are different",
-					task_array.get(i).userID, result_array.get(i).userID);
+					expected_result.get(i).userID, actual_result.get(i).userID);
 			AssertJUnit.assertEquals("TEST FAILED: statuses are different",
-					task_array.get(i).status, result_array.get(i).status);
+					expected_result.get(i).status, actual_result.get(i).status);
 		}
 	}
-	@Test(groups = { "TaskManagement" })
-	public void getAllTasks_taskNotExist() throws Exception {
 
-		AssertJUnit.assertFalse("Test not implemented", true);
-//		ArrayList<Task> task_array = new ArrayList<Task>();
-//
-//		task_array.add(task);
-//
-//		task = new Task("-124", "2 task under test", -25, "Completed");
-//		task_array.add(task);
-//		prepareTaskTestData();
-//
-//		task = new Task("-125", "3 task under test", -25, "Active");
-//		task_array.add(task);
-//		prepareTaskTestData();
-//
-//		PreparedStatement statement = dbconnector.getConnection()
-//				.prepareStatement("SELECT * FROM tasks_tbl WHERE user_id=?");
-//		statement.setInt(1, task.userID);
-//		statement.execute();
-//
-//		ResultSet result = statement.getResultSet();
-//
-//		ArrayList<Task> result_array = new ArrayList<Task>();
-//
-//		while (result.next()) {
-//			Task current_task = new Task(result.getString(1),
-//					result.getString(2), result.getInt(3), result.getString(4));
-//			result_array.add(current_task);
-//		}
-//		AssertJUnit.assertEquals(
-//				"TEST FAILED: result set length are different",
-//				task_array.size(), result_array.size());
-//		AssertJUnit.assertFalse(
-//				"TEST FAILED: database return empty result set",
-//				result_array.isEmpty());
-//		for (int i = 0; i < task_array.size(); i++) {
-//			AssertJUnit.assertEquals("TEST FAILED: task ids are different",
-//					task_array.get(i).id, result_array.get(i).id);
-//			AssertJUnit.assertEquals(
-//					"TEST FAILED: task descriptions are different",
-//					task_array.get(i).task, result_array.get(i).task);
-//			AssertJUnit.assertEquals("TEST FAILED: user ids are different",
-//					task_array.get(i).userID, result_array.get(i).userID);
-//			AssertJUnit.assertEquals("TEST FAILED: statuses are different",
-//					task_array.get(i).status, result_array.get(i).status);
-//		}
+	@Test(groups = { "TaskManagement" })
+	public void getAllTasks_userNotExist() throws Exception {
+
+		ArrayList<Task> actual_result = dbconnector.getAllTasks(-1000);
+
+		AssertJUnit.assertTrue(actual_result.isEmpty());
 	}
-	
+
 	@Test(groups = { "TaskManagement" })
 	public void getAllTasks_userHas1Task() throws Exception {
 
-		AssertJUnit.assertFalse("Test not implemented", true);
-		
-//		ArrayList<Task> task_array = new ArrayList<Task>();
-//
-//		task_array.add(task);
-//
-//		task = new Task("-124", "2 task under test", -25, "Completed");
-//		task_array.add(task);
-//		prepareTaskTestData();
-//
-//		task = new Task("-125", "3 task under test", -25, "Active");
-//		task_array.add(task);
-//		prepareTaskTestData();
-//
-//		PreparedStatement statement = dbconnector.getConnection()
-//				.prepareStatement("SELECT * FROM tasks_tbl WHERE user_id=?");
-//		statement.setInt(1, task.userID);
-//		statement.execute();
-//
-//		ResultSet result = statement.getResultSet();
-//
-//		ArrayList<Task> result_array = new ArrayList<Task>();
-//
-//		while (result.next()) {
-//			Task current_task = new Task(result.getString(1),
-//					result.getString(2), result.getInt(3), result.getString(4));
-//			result_array.add(current_task);
-//		}
-//		AssertJUnit.assertEquals(
-//				"TEST FAILED: result set length are different",
-//				task_array.size(), result_array.size());
-//		AssertJUnit.assertFalse(
-//				"TEST FAILED: database return empty result set",
-//				result_array.isEmpty());
-//		for (int i = 0; i < task_array.size(); i++) {
-//			AssertJUnit.assertEquals("TEST FAILED: task ids are different",
-//					task_array.get(i).id, result_array.get(i).id);
-//			AssertJUnit.assertEquals(
-//					"TEST FAILED: task descriptions are different",
-//					task_array.get(i).task, result_array.get(i).task);
-//			AssertJUnit.assertEquals("TEST FAILED: user ids are different",
-//					task_array.get(i).userID, result_array.get(i).userID);
-//			AssertJUnit.assertEquals("TEST FAILED: statuses are different",
-//					task_array.get(i).status, result_array.get(i).status);
-//		}
+		ArrayList<Task> expected_result = new ArrayList<Task>();
+		expected_result.add(task);
+
+		ArrayList<Task> result_array = dbconnector.getAllTasks(task.userID);
+
+		AssertJUnit.assertEquals(
+				"TEST FAILED: result set length are different",
+				expected_result.size(), result_array.size());
+		AssertJUnit.assertFalse(
+				"TEST FAILED: database return empty result set",
+				result_array.isEmpty());
+
+		AssertJUnit.assertEquals("TEST FAILED: task ids are different",
+				expected_result.get(0).id, result_array.get(0).id);
+		AssertJUnit.assertEquals(
+				"TEST FAILED: task descriptions are different",
+				expected_result.get(0).task, result_array.get(0).task);
+		AssertJUnit.assertEquals("TEST FAILED: user ids are different",
+				expected_result.get(0).userID, result_array.get(0).userID);
+		AssertJUnit.assertEquals("TEST FAILED: statuses are different",
+				expected_result.get(0).status, result_array.get(0).status);
+
 	}
-	
+
 	@Test(groups = { "TaskManagement" })
 	public void getAllTasks_userDoesNotHaveTasks() throws Exception {
-		
-		AssertJUnit.assertFalse("Test not implemented", true);
 
-//		ArrayList<Task> task_array = new ArrayList<Task>();
-//
-//		task_array.add(task);
-//
-//		task = new Task("-124", "2 task under test", -25, "Completed");
-//		task_array.add(task);
-//		prepareTaskTestData();
-//
-//		task = new Task("-125", "3 task under test", -25, "Active");
-//		task_array.add(task);
-//		prepareTaskTestData();
-//
-//		PreparedStatement statement = dbconnector.getConnection()
-//				.prepareStatement("SELECT * FROM tasks_tbl WHERE user_id=?");
-//		statement.setInt(1, task.userID);
-//		statement.execute();
-//
-//		ResultSet result = statement.getResultSet();
-//
-//		ArrayList<Task> result_array = new ArrayList<Task>();
-//
-//		while (result.next()) {
-//			Task current_task = new Task(result.getString(1),
-//					result.getString(2), result.getInt(3), result.getString(4));
-//			result_array.add(current_task);
-//		}
-//		AssertJUnit.assertEquals(
-//				"TEST FAILED: result set length are different",
-//				task_array.size(), result_array.size());
-//		AssertJUnit.assertFalse(
-//				"TEST FAILED: database return empty result set",
-//				result_array.isEmpty());
-//		for (int i = 0; i < task_array.size(); i++) {
-//			AssertJUnit.assertEquals("TEST FAILED: task ids are different",
-//					task_array.get(i).id, result_array.get(i).id);
-//			AssertJUnit.assertEquals(
-//					"TEST FAILED: task descriptions are different",
-//					task_array.get(i).task, result_array.get(i).task);
-//			AssertJUnit.assertEquals("TEST FAILED: user ids are different",
-//					task_array.get(i).userID, result_array.get(i).userID);
-//			AssertJUnit.assertEquals("TEST FAILED: statuses are different",
-//					task_array.get(i).status, result_array.get(i).status);
-//		}
+		cleanupTaskDatabase();
+		ArrayList<Task> expected_result = new ArrayList<Task>();
+
+		ArrayList<Task> actual_result = dbconnector.getAllTasks(task.userID);
+
+		AssertJUnit.assertEquals(
+				"TEST FAILED: result set length are different",
+				expected_result.size(), actual_result.size());
+		AssertJUnit.assertTrue(actual_result.isEmpty());
 	}
 
 	@Test(groups = { "TaskManagement" })
