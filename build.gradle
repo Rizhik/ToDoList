@@ -33,9 +33,17 @@ dependencies {
     compile("org.apache.tomcat.embed:tomcat-embed-el")
  	compile("org.springframework:spring-jdbc")
  	compile("mysql:mysql-connector-java")
+ 	compile('com.google.code.gson:gson')
  	
- 	testCompile ("org.testng:testng:6.9.4") 
+ 	testCompile("org.springframework:spring-test")
+ 	testCompile("org.mockito:mockito-core")
+ 	testCompile ("org.testng:testng:6.9.4")
+ 	 
  	
+}
+
+configurations {
+    compile.exclude group: 'commons-logging'
 }
 
 test {
@@ -45,17 +53,13 @@ test {
     }
 
   // show standard out and standard error of the test JVM(s) on the console
-  testLogging.showStandardStreams = true
+  // testLogging.showStandardStreams = true
 
   // listen to events in the test execution lifecycle
-  beforeTest { descriptor ->
-     logger.lifecycle("Running test: " + descriptor)
-  }
+  // beforeTest { descriptor ->logger.lifecycle("Running test: " + descriptor)}
 
   // listen to standard out and standard error of the test JVM(s)
-  onOutput { descriptor, event ->
-     logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
-  }
+  // onOutput { descriptor, event ->logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )}
 }
 
 uploadArchives {

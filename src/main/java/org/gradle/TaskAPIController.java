@@ -18,8 +18,7 @@ public class TaskAPIController {
 
 	@ResponseBody
 	@RequestMapping(value = "/api/task/create", method = RequestMethod.POST)
-	public void save(@RequestBody Task task)
-			throws Exception {
+	public void save(@RequestBody Task task) throws Exception {
 
 		DatabaseConnector dbconnector = new DatabaseConnector();
 		dbconnector.addTask(task);
@@ -29,6 +28,7 @@ public class TaskAPIController {
 
 	@ResponseBody
 	@RequestMapping(value = "/api/task/remove")
+	// POST
 	public void delete(@RequestBody Task task) throws Exception {
 
 		DatabaseConnector dbconnector = new DatabaseConnector();
@@ -39,6 +39,7 @@ public class TaskAPIController {
 
 	@ResponseBody
 	@RequestMapping(value = "/api/task/update")
+	// POST
 	public void edit(@RequestBody Task task) throws Exception {
 
 		DatabaseConnector dbconnector = new DatabaseConnector();

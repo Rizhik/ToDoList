@@ -28,18 +28,26 @@ public class WebController extends WebMvcConfigurerAdapter {
 	public String signin(@RequestParam String login,
 			@RequestParam String password, HttpServletResponse response)
 			throws Exception {
-		DatabaseConnector dbconnector = new DatabaseConnector();
-		User user = dbconnector.getUser(login);
-		boolean isVeridied = dbconnector.verifyPassword(password, user);
 
-		if (isVeridied) {
-			// create cookie and set it in response
-			Cookie cookie = new Cookie("current_user_id",
-					Integer.toString(user.id));
-			response.addCookie(cookie);
-			return "index";
+		DatabaseConnector dbconnector = new DatabaseConnector();
+
+		User user = dbconnector.getUser(login);
+
+		if (user != null) {
+
+			boolean isVeridied = dbconnector.verifyPassword(password, user);
+
+			if (isVeridied) {
+				// create cookie and set it in response
+				Cookie cookie = new Cookie("current_user_id",
+						Integer.toString(user.id));
+				response.addCookie(cookie);
+				return "index";
+			}
 		}
+
 		dbconnector.close();
+
 		return "login";
 	}
 

@@ -152,10 +152,13 @@ public class DatabaseConnector {
 		statement.setString(1, login);
 		statement.executeQuery();
 		ResultSet result = statement.getResultSet();
-		result.first();
-		User user = new User(result.getInt(1), result.getString(2),
-				result.getString(3));
-		return user;
+
+		if (result.first()) {
+
+			return new User(result.getInt(1), result.getString(2),
+					result.getString(3));
+		}
+		return null;
 	}
 
 	public boolean verifyPassword(String password, User user)
@@ -186,6 +189,26 @@ public class DatabaseConnector {
 		} catch (SQLException e) {
 
 			log.info("USER CAN NOT BE CREATED");
+
+			return false;
+		}
+
+	}
+
+	public boolean deleteUser(String login) {
+		try {
+			PreparedStatement statement = connection
+					.prepareStatement("DELETE FROM users_tbl WHERE login=?");
+			statement.setString(1, login);
+			statement.executeUpdate();
+
+			log.info("USER " + login + " DELETED");
+
+			return true;
+
+		} catch (SQLException e) {
+
+			log.info("USER CAN NOT BE DELETED");
 
 			return false;
 		}
