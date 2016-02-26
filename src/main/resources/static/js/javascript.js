@@ -10,42 +10,20 @@ var ItemStatus = {
 }
 
 var statusFilter = ItemStatus.All;
-var checkAllBox = document.getElementById("checkAll");
-var newTaskField = document.getElementById('newTask');
-var ul = document.getElementById("ToDoList");
 
 // Function for adding task UI
 function addButton() {
-	checkAllBox.checked = false;
+	$('#checkAll').attr('checked', false);
 
-	if (newTaskField.value == '')
+	var newTaskValue = $("#newTask").val();
+
+	if (newTaskValue == '')
 		return;
 
-	addItem(newTaskField.value);
+	addItem(newTaskValue);
 
-	newTaskField.value = '';
+	$("#newTask").val('');
 	showByStatus(statusFilter);
-}
-
-function ajax(url, method, data, onSucccess) {
-	var xhttp = new XMLHttpRequest();
-	xhttp.open(method, url, true);
-	xhttp.setRequestHeader("Accept", "application/json");
-	xhttp.setRequestHeader("Content-type", "application/json");
-	if (method == 'POST') {
-		xhttp.send(data);
-	} else {
-		xhttp.send();
-	}
-
-	if (onSucccess)
-
-		xhttp.onreadystatechange = function() {
-			if (xhttp.readyState == 4 && xhttp.status == 200) {
-
-				onSucccess(xhttp.responseText);
-			}
-		}
 }
 
 // Add new task to the task list array
@@ -61,13 +39,18 @@ function addItem(taskText) {
 	listOfItems.push(taskItem);
 
 	var json = JSON.stringify(taskItem);
+
 	// AJAX request to Server
-	ajax("/api/task/create", "POST", json);
+	$.post({
+		url : "/api/task/create",
+		data : json,
+		contentType : "application/json"
+	});
 }
 
 // remove deleted task from the screen and run deleteItem() function
 function deleteButton(eventArgs) {
-	var id = getDataIdValue(eventArgs.target);
+	var id = $(eventArgs.target).closest("li[data-id]").attr("data-id");
 	deleteItem(id);
 	showByStatus(statusFilter);
 }
@@ -75,11 +58,15 @@ function deleteButton(eventArgs) {
 // delete task from the task list
 function deleteItem(id) {
 	var index = getIndexById(id);
-	
-	// AJAX request to Server
+
 	var json = JSON.stringify(listOfItems[index]);
-	
-	ajax("/api/task/remove", "POST", json);
+
+	// AJAX request to Server
+	$.post({
+		url : "/api/task/remove",
+		data : json,
+		contentType : "application/json"
+	});
 
 	listOfItems.splice(index, 1);
 }
@@ -88,7 +75,7 @@ function deleteItem(id) {
 // changed
 function changeStatus(eventArgs) {
 
-	var id = getDataIdValue(eventArgs.target);
+	var id = $(eventArgs.target).closest("li[data-id]").attr("data-id");
 	var checkbox = eventArgs.target;
 	var completeTasksCount = 0;
 
@@ -96,19 +83,17 @@ function changeStatus(eventArgs) {
 		if (listOfItems[i].id == id) {
 			if (checkbox.checked) {
 				listOfItems[i].status = ItemStatus.Completed;
-
-				// AJAX request to Server
-				var json = JSON.stringify(listOfItems[i]);
-				ajax("/api/task/update", "POST", json);
 			} else {
 				listOfItems[i].status = ItemStatus.Active;
-
-				// AJAX request to Server
-				var json = JSON.stringify(listOfItems[i]);
-				ajax("/api/task/update", "POST", json);
-
-				checkAllBox.checked = false;
+				$('#checkAll').attr('checked', false);
 			}
+			// AJAX request to Server
+			var json = JSON.stringify(listOfItems[i]);
+			$.post({
+				url : "/api/task/update",
+				data : json,
+				contentType : "application/json"
+			});
 		}
 
 		if (listOfItems[i].status == ItemStatus.Completed) {
@@ -117,7 +102,7 @@ function changeStatus(eventArgs) {
 	}
 
 	if (completeTasksCount == listOfItems.length) {
-		checkAllBox.checked = true;
+		$('#checkAll').attr('checked', true);
 	}
 
 	showByStatus(statusFilter);
@@ -126,27 +111,26 @@ function changeStatus(eventArgs) {
 
 var firstLoadData = true;
 
-
 // add Listener to all checkboxes, inputs and buttons on the page
 function addListener(currentStatus) {
 
 	// ajax event listener for loading data from server
 	if (firstLoadData) {
 		// AJAX request to Server
-
-		ajax("/api/task/getcontent", "GET","" ,function (responseText) {
-			listOfItems = JSON.parse(responseText);
+		$.getJSON('/api/task/getcontent', function(responseJSON) {
+			listOfItems = responseJSON;
 			firstLoadData = false;
 			showByStatus(statusFilter);
 		});
+
 		userID = readUserIdFromCookie();
 	}
 
 	// Add event listener to CheckAll checkbox
-	checkAllBox.addEventListener("change", checkAll);
+	$("#checkAll").change(checkAll);
 
 	// Add event listener to input field for new task
-	newTaskField.addEventListener('keypress', function onEnterButton(event) {
+	$("#newTask").keypress(function onEnterButton(event) {
 		var key = event.which || event.keyCode;
 		if (key === 13) {
 			addButton();
@@ -156,8 +140,8 @@ function addListener(currentStatus) {
 	// Add event listener to input field for task in edit mode
 	for (var i = 0; i < listOfItems.length; i++) {
 		if (listOfItems[i].editFlag) {
-			var editElement = document.getElementsByClassName("edit")[i];
-			editElement.focus();
+			var editField = $(".edit").eq(i);
+			editField.focus();
 
 			// save all changes by Enter
 			function onEnterButton(event) {
@@ -173,37 +157,21 @@ function addListener(currentStatus) {
 				save(event);
 			}
 
-			editElement.addEventListener('keypress', onEnterButton);
-
-			// save all changes if focus was lost
-			editElement.addEventListener('blur', onLooseFocuse);
+			// save all changes when focus is lost
+			editField.keypress(onEnterButton).blur(onLooseFocuse);
 
 			function unsubscribe() {
-				editElement.removeEventListener('keypress', onEnterButton);
-				editElement.removeEventListener('blur', onLooseFocuse);
+				editField.off('keypress', onEnterButton).off('blur',
+						onLooseFocuse);
 			}
 		}
 	}
 
 	// Add event listener to each checkbox, label and DeleteButton in ToDo list
-	for (var i = 0; i < listOfItems.length; i++) {
-		if (listOfItems[i].status == currentStatus
-				|| currentStatus == ItemStatus.All) {
-			var currentLI = findNode(ul, "data-id", listOfItems[i].id);
-			if (currentLI != null) {
-				var label = findNode(currentLI, "class", "label");
-				label.addEventListener("dblclick", editButton);
+	$('button.deleteButton').click(deleteButton);
+	$('input.checkbox').change(changeStatus);
+	$('label.label').dblclick(editButton);
 
-				var del = findNode(currentLI, "class", "deleteButton");
-				del.addEventListener("click", deleteButton);
-
-				var check = findNode(currentLI, "class", "checkbox");
-				check.addEventListener("change", changeStatus);
-			} else {
-				console.log("EVENT LISTENER -  DOES NOT WORK");
-			}
-		}
-	}
 }
 
 // Track how many tasks has status "Active"
@@ -214,24 +182,16 @@ function trackActiveTaskNumber() {
 			activeTasksCounter++;
 		}
 	}
-	if ((activeTasksCounter != listOfItems.length)) {
-		document.getElementById("ClearCompletedButton").style.display = "inline";
-	} else {
-		document.getElementById("ClearCompletedButton").style.display = "none";
-	}
-	document.getElementById("counter").innerHTML = activeTasksCounter
-			+ " items left";
+
+	$("#ClearCompletedButton").toggle(activeTasksCounter != listOfItems.length);
+
+	$("#counter").text(activeTasksCounter + " items left");
 }
 
 // display manage content buttons only if any task exists in the task list
 function displayManageContentButtons() {
-	var buttons = document.getElementsByClassName("controls");
-	for (var i = 0; i < buttons.length; i++) {
-		if (listOfItems != 0) {
-			buttons[i].style.display = "inline";
-		} else {
-			buttons[i].style.display = "none";
-		}
+	for (var i = 0; i < $(".controls").length; i++) {
+		$(".controls").eq(i).toggle(listOfItems != 0);
 	}
 }
 
@@ -265,7 +225,7 @@ function createHTMLForTasks(currentStatus) {
 		}
 	}
 
-	document.getElementById("ToDoList").innerHTML = htmlCode;
+	$("#ToDoList").html(htmlCode);
 }
 
 // currentStatus cat be Active, Completed or All
@@ -286,18 +246,24 @@ function showByStatus(currentStatus) {
 // Allow to mark/un-mark all tasks as Completed
 function checkAll() {
 
-	var currentValueofCheckbox = checkAllBox.checked;
-
 	for (var i = 0; i < listOfItems.length; i++) {
-		if (currentValueofCheckbox
-				&& listOfItems[i].status == ItemStatus.Active) {
+
+		var checkAllStatus = $("#checkAll").is(':checked');
+
+		if (checkAllStatus && listOfItems[i].status == ItemStatus.Active) {
 			listOfItems[i].status = ItemStatus.Completed;
 		}
 
-		if (!currentValueofCheckbox
-				&& listOfItems[i].status == ItemStatus.Completed) {
+		if (!checkAllStatus && listOfItems[i].status == ItemStatus.Completed) {
 			listOfItems[i].status = ItemStatus.Active;
 		}
+
+		var json = JSON.stringify(listOfItems[i]);
+		$.post({
+			url : "/api/task/update",
+			data : json,
+			contentType : "application/json"
+		});
 	}
 
 	showByStatus(statusFilter);
@@ -305,7 +271,7 @@ function checkAll() {
 
 // keep checkAll checkbox unchecked during first run (or refresh)
 function uncheck() {
-	checkAllBox.checked = false;
+	$('#checkAll').attr('checked', false);
 }
 
 // Remove completed tasks from the page and run clearCompleted() function
@@ -318,7 +284,7 @@ function clearCompletedButton() {
 function clearCompleted() {
 	for (var i = listOfItems.length - 1; i >= 0; i--) {
 		if (listOfItems[i].status == ItemStatus.Completed) {
-			listOfItems.splice(i, 1);
+			deleteItem(listOfItems[i].id);
 		}
 	}
 }
@@ -327,33 +293,36 @@ function clearCompleted() {
 function editButton(eventArgs) {
 	addListener(statusFilter);
 
-	var id = getDataIdValue(eventArgs.target);
+	var id = $(eventArgs.target).closest("li[data-id]").attr("data-id");
 	var index = getIndexById(id);
 	listOfItems[index].editFlag = true;
 
 	showByStatus(statusFilter);
 
-	var tagParent = findNode(ul, "data-id", id);
-	var input = findNode(tagParent, "class", "edit");
-	input.value = listOfItems[index].task;
+	$('input.edit').val(listOfItems[index].task);
 }
 
 // Save changes after edit
 function save(eventArgs) {
-	var id = getDataIdValue(eventArgs.target);
+	var id = $(eventArgs.target).closest("li[data-id]").attr("data-id");
+
 	var index = getIndexById(id);
 	listOfItems[index].task = eventArgs.target.value;
 	listOfItems[index].editFlag = false;
 
 	// AJAX request to Server
 	var json = JSON.stringify(listOfItems[index]);
-	ajax("/api/task/update", "POST", json);
+	$.post({
+		url : "/api/task/update",
+		data : json,
+		contentType : "application/json"
+	});
 
 	showByStatus(statusFilter);
 
 }
 
-// Get index of task by its ID
+// Get index of task in listOfItems array by its ID
 function getIndexById(id) {
 	for (var i = 0; i < listOfItems.length; i++) {
 		if (listOfItems[i].id == id) {
@@ -361,19 +330,6 @@ function getIndexById(id) {
 		}
 	}
 	return -1;
-}
-
-// find LI by DATA-ID
-function getElementByDataId(id) {
-	var list = document.getElementsByTagName("ul");
-
-	for (var i = 0; i < list.length; i++) {
-		var currentResult = findNode(list[i], "data-id", id);
-		if (currentResult != null) {
-			return currentResult;
-		}
-	}
-	return null;
 }
 
 function readUserIdFromCookie() {
