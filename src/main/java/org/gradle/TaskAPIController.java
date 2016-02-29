@@ -22,7 +22,9 @@ public class TaskAPIController {
 
 	@ResponseBody
 	@RequestMapping(value = "/api/task/create", method = RequestMethod.POST)
-	public void save(@RequestBody Task task) throws Exception {
+	public void save(@RequestBody Task task,
+			@CookieValue("current_user_id") String userID) throws Exception {
+		task.userID = Integer.parseInt(userID);
 
 		DatabaseConnector dbconnector = DbConnectionProvider.create();
 		dbconnector.addTask(task);
@@ -33,8 +35,10 @@ public class TaskAPIController {
 	@ResponseBody
 	@RequestMapping(value = "/api/task/remove")
 	// POST
-	public void delete(@RequestBody Task task) throws Exception {
+	public void delete(@RequestBody Task task,
+			@CookieValue("current_user_id") String userID) throws Exception {
 
+		task.userID = Integer.parseInt(userID);
 		DatabaseConnector dbconnector = DbConnectionProvider.create();
 		dbconnector.deleteTask(task.id);
 		log.info("Task removed");
@@ -44,7 +48,9 @@ public class TaskAPIController {
 	@ResponseBody
 	@RequestMapping(value = "/api/task/update")
 	// POST
-	public void edit(@RequestBody Task task) throws Exception {
+	public void edit(@RequestBody Task task,
+			@CookieValue("current_user_id") String userID) throws Exception {
+		task.userID = Integer.parseInt(userID);
 
 		DatabaseConnector dbconnector = DbConnectionProvider.create();
 		dbconnector.setTaskDescription(task.id, task.task);

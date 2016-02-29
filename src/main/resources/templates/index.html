@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 
-<html>
+<html ng-app="todoApp">
 
 <head>
 <meta charset="UTF-8" />
 <link rel="stylesheet" href="css/style.css" />
 <script src="js/jquery-1.12.1.min.js"></script>
+<script type="text/javascript" src="js/angular.min.js"></script>
 <title>ToDo List</title>
 </head>
 
-<body onLoad="uncheck(); addListener('Active');">
+<body>
 	<div class="Grid">
 		<div id="Header" class="Row">
 			<div id="Name">
@@ -36,41 +37,59 @@
 
 
 				</div>
-				<div id="Content" class="Column Expand">
+				<div id="Content" class="Column Expand"
+					ng-controller="TodoAppController as ctrl">
 					<h2>Name of current List</h2>
 					<div class="inputFields">
-						<input type="text" id="newTask"
+
+
+						<input ng-keypress="ctrl.addTask($event)" type="text" id="newTask"
 							placeholder="What needs to be done?" /> <input class="controls"
-							type="checkbox" id="checkAll" />
+							type="checkbox" id="checkAll" ng-model="checkAllValue"
+							ng-true-value="'Completed'" ng-false-value="'Active'"
+							ng-click="ctrl.checkAll(checkAllValue)"
+							ng-show="ctrl.isReadyForDisplay()" ng-checked="ctrl.allChecked()" />
+
 					</div>
 
 					<div class="application">
-						<ul id="ToDoList"></ul>
+						<ul id="ToDoList">
 
-						<!-- 
-					 	<li class="{{classValue}}" data-id="{{id}}">
-					 		<div>
-					 			<input {{status}} type="checkbox" class="checkbox"></input>
-					 			<label class="label">{{text}}</label>
-					 			<button class="destroy deleteButton" type="Delete">X</button>
-					 			<input class="edit" type="text">
-					 		</div>
-					 	</li>';
-					 -->
+							<li ng-repeat="task in ctrl.tasks | filter:statusFilter"
+								ng-class="{editMode: task.editFlag, completed: ctrl.isCompleted(task.status)}"
+								data-id="{{task.id}}">
+
+								<div>
+									<input ng-model="task.status" ng-true-value="'Completed'"
+										ng-false-value="'Active'" ng-change="ctrl.changeStatus(task)"
+										ng-checked="ctrl.isCompleted(task.status)" type="checkbox"
+										class="checkbox"></input> <label class="label"
+										ng-dblclick="ctrl.editModeOn(task)">{{task.task}}</label>
+									<button ng-click="ctrl.deleteTask(task)"
+										class="destroy deleteButton" type="Delete">X</button>
+									<input ng-model="task.task" class="edit" type="text"
+										ng-init="ctrl.getTaskValue(task)" ng-if="task.editFlag"
+										ng-keypress="ctrl.updateTask($event,task)"
+										autofocus="task.editFlag" ng-blur="ctrl.editModeOff(task)"></input>
+								</div>
+							</li>
+						</ul>
 					</div>
 					<div id="Controls">
-						<button class="controls" name="ViewAllButton"
-							onclick="showByStatus('All')">All</button>
-						<button class="controls" name="ViewActiveButton"
-							onclick="showByStatus('Active')">Active</button>
-						<button class="controls" name="ViewCompletedButton"
-							onclick="showByStatus('Completed')">Completed</button>
-						<button class="controls" id="ClearCompletedButton"
-							onclick="clearCompletedButton()">Clear Completed</button>
+						<button ng-show="ctrl.isReadyForDisplay()" class="controls"
+							name="ViewAllButton" ng-click="statusFilter = ''">All</button>
+						<button ng-show="ctrl.isReadyForDisplay()" class="controls"
+							name="ViewActiveButton"
+							ng-click="statusFilter = {status: 'Active'}">Active</button>
+						<button ng-show="ctrl.isReadyForDisplay()" class="controls"
+							name="ViewCompletedButton"
+							ng-click="statusFilter = {status: 'Completed'}">Completed</button>
+						<button ng-hide="ctrl.isNoCompleted()" class="controls"
+							id="ClearCompletedButton" ng-click="ctrl.clearCompleted()">Clear
+							Completed</button>
 					</div>
 
 					<div class="controls" id="counter"></div>
-
 				</div>
 
 				<div id="RSide" class="Column">
@@ -87,7 +106,6 @@
 
 	<script type="text/javascript" src="js/uuid.js"></script>
 	<script type="text/javascript" src="js/javascript.js"></script>
-	
 </body>
 
 </html>

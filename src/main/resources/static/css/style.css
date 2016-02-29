@@ -105,7 +105,7 @@ p, h1, h2, h3 {
 }
 
 .controls {
-	display: none;
+	/*display: none;*/
 	color: #777;
 	margin-bottom: 20px;
 }
