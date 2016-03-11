@@ -44,11 +44,12 @@
 
 
 						<input ng-keypress="ctrl.addTask($event)" type="text" id="newTask"
-							placeholder="What needs to be done?" /> <input class="controls"
+							placeholder="What needs to be done?" /> 
+						<input class="controls"
 							type="checkbox" id="checkAll" ng-model="checkAllValue"
 							ng-true-value="'Completed'" ng-false-value="'Active'"
 							ng-click="ctrl.checkAll(checkAllValue)"
-							ng-show="ctrl.isReadyForDisplay()" ng-checked="ctrl.allChecked()" />
+							ng-show="ctrl.isReadyForDisplay()" ng-checked="ctrl.allChecked()"/>
 
 					</div>
 

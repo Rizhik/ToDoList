@@ -42,6 +42,7 @@ dependencies {
  	testCompile("org.mockito:mockito-core")
  	testCompile ("org.testng:testng:6.9.4")
  	testCompile ("junit:junit")
+ 	testCompile ("org.seleniumhq.selenium:selenium-chrome-driver:2.52.0")
  	
 }
 

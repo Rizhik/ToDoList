@@ -41,8 +41,8 @@ app.controller('TodoAppController', function($http) {
 			this.tasks.splice(0, 0, taskItem);
 
 			// Push data to server
-			var json = JSON.stringify(taskItem);
-			$http.post("/api/task/create", json);
+			$http.post("/api/task/create", taskItem);
+			
 			$event.target.value = "";
 		}
 	};
@@ -59,8 +59,7 @@ app.controller('TodoAppController', function($http) {
 				this.tasks.splice(i, 1);
 
 				// Push data to server
-				var json = JSON.stringify(currentTask);
-				$http.post("/api/task/remove", json);
+				$http.post("/api/task/remove", currentTask);
 			}
 		}
 	};
@@ -69,11 +68,10 @@ app.controller('TodoAppController', function($http) {
 	// is changed
 	this.changeStatus = function(task) {
 		// Push data to server
-		var json = JSON.stringify(task);
-		$http.post("/api/task/update", json);
+		$http.post("/api/task/update", task);
 	};
 
-	var checkAllValue = false;
+	this.checkAllValue = false;
 
 	this.checkAll = function(checkAllValue) {
 		for (var i = 0; i < this.tasks.length; i++) {
@@ -81,9 +79,8 @@ app.controller('TodoAppController', function($http) {
 			if (currentTask.status != checkAllValue) {
 
 				currentTask.status = checkAllValue;
-
-				var json = JSON.stringify(currentTask);
-				$http.post("/api/task/update", json);
+       
+				$http.post("/api/task/update", currentTask);
 			}
 		}
 	};
@@ -92,6 +89,7 @@ app.controller('TodoAppController', function($http) {
 		for (var i = 0; i < this.tasks.length; i++) {
 			if (this.tasks[i].status == 'Active') {
 				return false;
+				
 			}
 		}
 		return true;
@@ -117,8 +115,7 @@ app.controller('TodoAppController', function($http) {
 		for (var i = this.tasks.length - 1; i >= 0; i--) {
 			var currentTask = this.tasks[i];
 			if (currentTask.status == 'Completed') {
-				var json = JSON.stringify(currentTask);
-				$http.post("/api/task/remove", json);
+				$http.post("/api/task/remove", currentTask);
 				this.tasks.splice(i, 1);
 			}
 		}
@@ -142,8 +139,7 @@ app.controller('TodoAppController', function($http) {
 			task.editFlag = false;
 
 			// Push data to server
-			var json = JSON.stringify(task);
-			$http.post("/api/task/update", json);
+			$http.post("/api/task/update", task);
 		}
 	};
 
